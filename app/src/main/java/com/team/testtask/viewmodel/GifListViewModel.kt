@@ -1,8 +1,7 @@
 package com.team.testtask.viewmodel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.team.testtask.BaseApplication
@@ -22,22 +21,24 @@ constructor(
     private val repository: ImageRepo,
     @Named("api_key") private val apik: String,
 ): ViewModel() {
-    private val _gifList: MutableLiveData<List<GifImage>> = MutableLiveData()
-    val gifList: LiveData<List<GifImage>> get() = _gifList
-    private val _isConnected: MutableLiveData<Boolean> = MutableLiveData()
-    val isConnected: LiveData<Boolean> get() = _isConnected
+    val gifList: MutableState<List<GifImage>> = mutableStateOf(emptyList())
+    val isConnected: MutableState<Boolean> = mutableStateOf(true)
     val query = mutableStateOf("car")
     val position = mutableStateOf(0)
+
+    init {
+        loadData()
+    }
 
     fun loadData() {
         // check internet
         if (isConnected(app)) {
-            setConnection(true)
+            isConnected.value = true
             viewModelScope.launch {
                 newSearch()
             }
         } else {
-            setConnection(false)
+            isConnected.value = true
         }
     }
 
@@ -47,25 +48,12 @@ constructor(
             key = query.value
         )
 
-        _gifList.value = result
-    }
-
-    fun setNewQuery(newSearch: String) {
-        // check internet
-        if (isConnected(app)) {
-            setConnection(true)
-            query.value = newSearch
-            viewModelScope.launch {
-                newSearch()
-            }
-        } else {
-            setConnection(false)
-        }
+        gifList.value = result
     }
 
     fun increaseCount() {
         val nextPosition = position.value + 1
-        val listSize = gifList.value?.size ?: 0
+        val listSize = gifList.value.size
 
         if (nextPosition < listSize) {
             position.value = nextPosition
@@ -75,16 +63,12 @@ constructor(
     }
     fun decreaseCount() {
         val nextPosition = position.value - 1
-        val listSize = gifList.value?.size ?: 0
+        val listSize = gifList.value.size
 
         if (nextPosition in 0 until listSize) {
             position.value = nextPosition
         } else {
             position.value = listSize - 1
         }
-    }
-
-    fun setConnection(connectValue: Boolean) {
-        _isConnected.value = connectValue
     }
 }
