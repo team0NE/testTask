@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/gifListFragment">
+
+    <fragment
+        android:id="@+id/gifListFragment"
+        android:name="com.team.testtask.ui.fragments.GifListFragment"
+        android:label="GifListFragment" >
+        <action
+            android:id="@+id/viewGif"
+            app:destination="@id/gifFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gifFragment"
+        android:name="com.team.testtask.ui.fragments.GifFragment"
+        android:label="GifFragment" />
+</navigation>
